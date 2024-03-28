@@ -11,5 +11,9 @@ export const router = createRouter({
             path: '/nameTag',
             component: () => import('./views/NameTagView.vue')
         },
+        {
+            path: '/input',
+            component: () => import('./views/InputView.vue')
+        },
     ]
 })

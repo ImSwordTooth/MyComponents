@@ -1,8 +1,9 @@
 <template>
   <div class="container">
     <div class="componentList">
-      <RouterLink to="/button">按钮</RouterLink>
-      <RouterLink to="/nameTag">多彩标签</RouterLink>
+      <RouterLink to="/button" class="link">按钮</RouterLink>
+      <RouterLink to="/nameTag" class="link">多彩标签</RouterLink>
+      <RouterLink to="/input" class="link">输入框</RouterLink>
     </div>
     <div class="rightPart">
       <RouterView />
@@ -50,6 +51,24 @@ const editTableTableData = ref({
   .componentList {
     width: 300px;
     flex-shrink: 0;
+    padding-top: 100px;
+    list-style: none;
+
+    .link {
+      display: block;
+      padding: 6px 20px;
+      color: #4d4d4d;
+
+      &:hover {
+        background-color: #f8f8f8;
+      }
+
+      &::before {
+        content: '•';
+        color: #808080;
+        margin-right: 8px;
+      }
+    }
   }
 
   .rightPart {

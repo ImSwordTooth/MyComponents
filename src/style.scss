@@ -19,6 +19,13 @@
   $primaryColor: hsl(212 100% 47%);
 }
 
+html,body {
+  height: 100%;
+}
+
+#app {
+  height: 100%;
+}
 
 a {
   font-weight: 500;
