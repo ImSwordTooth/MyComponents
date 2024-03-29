@@ -4,6 +4,7 @@
       <RouterLink to="/button" class="link">按钮</RouterLink>
       <RouterLink to="/nameTag" class="link">多彩标签</RouterLink>
       <RouterLink to="/input" class="link">输入框</RouterLink>
+      <RouterLink to="/slider" class="link">滑动输入框</RouterLink>
     </div>
     <div class="rightPart">
       <RouterView />

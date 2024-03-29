@@ -15,5 +15,9 @@ export const router = createRouter({
             path: '/input',
             component: () => import('./views/InputView.vue')
         },
+        {
+            path: '/slider',
+            component: () => import('./views/SliderView.vue')
+        },
     ]
 })
