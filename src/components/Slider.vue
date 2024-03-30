@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, nextTick, ref} from 'vue';
+import {computed, nextTick, onMounted, ref} from 'vue';
 
 const props = defineProps<{
   minValue: number // 最小值
@@ -28,9 +28,15 @@ const sliderValue = ref<number>(props.maxValue)
 const sliderPercent = computed(() => {
   return ((sliderValue.value - props.minValue) / props.maxValue) * 100
 })
-const stepWidth = computed(() => {
-  const { width } = sliderInner.value.getBoundingClientRect()
-  return width / ((props.maxValue - props.minValue) / props.step)
+
+const staticClientRect= computed(() => {
+  console.log(sliderInner.value.getBoundingClientRect())
+  const { width, left, right } = sliderInner.value.getBoundingClientRect()
+  return {
+    stepWidth: width / ((props.maxValue - props.minValue) / props.step), // 每一步对应的宽度
+    innerLeft: left, // slider 容器左边
+    innerRight: right // slider 容器右边
+  }
 })
 
 const isStart = ref<boolean>(false)
@@ -41,24 +47,54 @@ const startDrag = (e: MouseEvent) => {
   isStart.value = true;
   positionInfo.value = { clientX,clientY }
 
-  document.addEventListener('mouseup', () => {
-    isStart.value = false;
-    positionInfo.value = { clientX: 0, clientY: 0 }
-  })
+  document.addEventListener('mouseup', endDrag)
+  document.addEventListener('mousemove', draging)
 }
 
 const draging = (e: MouseEvent) => {
+  console.log(e)
+  e.preventDefault();
+  const { stepWidth, innerLeft, innerRight } = staticClientRect.value
   if (isStart.value) {
     const { clientX: endX, clientY: endY } = e
-    console.log({ startX: positionInfo.value.clientX, endX })
-    nextTick(() => {
-      sliderValue.value += (endX - positionInfo.value.clientX)/stepWidth.value
-      positionInfo.value = { clientX: endX, clientY: endY }
-    })
+    if (endX < innerLeft || endX > innerRight) {
+      console.log('超了')
+      return
+    }
+    console.log({ '开始': positionInfo.value.clientX, '结束': endX })
+    console.log('差值：', endX - positionInfo.value.clientX)
+    // nextTick(() => {
+    console.log('差值/step：', (endX - positionInfo.value.clientX)/stepWidth)
+      sliderValue.value += (endX - positionInfo.value.clientX)/stepWidth
 
+    const finalValue = sliderValue.value + (endX - positionInfo.value.clientX)/stepWidth
+
+    if (finalValue > props.maxValue) {
+      sliderValue.value = props.maxValue
+    }
+    if (finalValue < props.minValue) {
+      sliderValue.value = props.minValue
+    }
+
+    console.log(sliderValue.value)
+    positionInfo.value = { clientX: endX, clientY: endY }
 
   }
 }
+
+
+const endDrag = () => {
+  isStart.value = false;
+  positionInfo.value = { clientX: 0, clientY: 0 }
+
+  document.removeEventListener('mousemove', draging)
+  document.removeEventListener('mouseup', endDrag)
+}
+
+onMounted(() => {
+  const { stepWidth } = staticClientRect.value
+  console.log(stepWidth)
+})
 
 </script>
 

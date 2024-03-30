@@ -5,15 +5,32 @@
     <div class="width400">
       <div style="margin-bottom: 20px">我是一个宽度为 400px 的 div</div>
 
+      <Slider :max-value="100" :min-value="0" :step="1"></Slider>
+      <Slider :max-value="200" :min-value="0" :step="1"></Slider>
+
+
+      <div>bug: 精度较小时，滑动有问题</div>
       <Slider :max-value="1" :min-value="0" :step="0.1"></Slider>
+
+
+
+
     </div>
+
+
+    <div>bug&完善</div>
+    <ul>
+      <li>精度较小时，滑动有问题</li>
+      <li><del>快速滑动时，不跟着鼠标走了</del></li>
+      <li>需要加 step 滑动</li>
+    </ul>
 
   </div>
 
 </template>
 <script setup lang="ts">
 import Slider from "../components/Slider.vue";
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 // import {  } from '@types/html'
 const variantList = [
   'solid',
@@ -28,6 +45,10 @@ const isLoading = ref<boolean>(false)
 const loadingText = ref<string>('')
 const startContent = ref<string | HTMLElement>('')
 const endContent = ref<string | HTMLElement>()
+
+onMounted(() => {
+
+})
 
 const changeIsDisabled = (e: Event) => isDisabled.value = (e.target as HTMLInputElement).checked;
 const changeIsLoading = (e: Event) => isLoading.value = (e.target as HTMLInputElement).checked;
