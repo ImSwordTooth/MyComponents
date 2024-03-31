@@ -6,6 +6,7 @@
       <div style="margin-bottom: 20px">我是一个宽度为 400px 的 div</div>
 
       <Slider :max-value="100" :min-value="0" :step="1"></Slider>
+      <Slider :max-value="10" :min-value="0" :step="1"></Slider>
       <Slider :max-value="200" :min-value="0" :step="1"></Slider>
 
 
@@ -16,15 +17,6 @@
 
 
     </div>
-
-
-    <div>bug&完善</div>
-    <ul>
-      <li>精度较小时，滑动有问题</li>
-      <li><del>快速滑动时，不跟着鼠标走了</del></li>
-      <li>需要加 step 滑动</li>
-    </ul>
-
   </div>
 
 </template>
