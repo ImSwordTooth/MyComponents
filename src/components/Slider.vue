@@ -1,8 +1,13 @@
 <template>
   <div class="slider">
     <div class="textPart">
-      <div>Temperature</div>
-      <div>{{ sliderValue }}</div>
+      <div class="label">
+        <slot name="label">{{ label }}</slot>
+      </div>
+      <div v-if="valueFormat">
+        <template v-if="typeof valueFormat === 'boolean'">{{ sliderValue }}</template>
+        <template v-else>{{ valueFormat(sliderValue) }}</template>
+      </div>
     </div>
     <div class="sliderInner" ref="sliderInner">
       <div class="sliderThumb" :style="{ height: `${thumbHeight || 10}px` }"></div>
@@ -14,15 +19,22 @@
 </template>
 
 <script setup lang="ts">
-import {computed, nextTick, onMounted, ref} from 'vue';
+import {computed, nextTick, onMounted, ref, SlotsType} from 'vue';
 
-const props = defineProps<{
+
+const props = withDefaults(defineProps<{
   minValue: number // 最小值
   maxValue: number // 最大值
   step: number // 每一格的值
   thumbHeight?: number // 轨道高度
-  label?: string
+  label?: string | SlotsType
+  valueFormat?: boolean | ((value: number) => string)
+}>(), {
+  valueFormat: true
+})
 
+const slots = defineSlots<{
+  label?: any
 }>()
 
 const sliderInner = ref()
@@ -91,7 +103,6 @@ const draging = (e: MouseEvent) => {
       return;
     }
 
-
     const finalValue = +(sliderValue.value + delta).toFixed(decimalLength.value)
     // const finalValue = (sliderValue.value + delta)
 
@@ -125,6 +136,11 @@ const endDrag = () => {
     align-items: center;
     justify-content: space-between;
     margin-bottom: 6px;
+
+    .label {
+      color: hsl(202 24% 9%);
+      font-size: 14px;
+    }
   }
 
   .sliderInner {

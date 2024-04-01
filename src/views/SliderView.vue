@@ -5,17 +5,19 @@
     <div class="width400">
       <div style="margin-bottom: 20px">我是一个宽度为 400px 的 div</div>
 
-      <Slider :max-value="100" :min-value="0" :step="1"></Slider>
-      <Slider :max-value="10" :min-value="0" :step="1"></Slider>
-      <Slider :max-value="200" :min-value="0" :step="1"></Slider>
-
-
-      <div>bug: 精度较小时，滑动有问题</div>
+      <Slider :max-value="100" :min-value="0" :step="1">
+        <template #label>
+          <h3>我是一个 h3</h3>
+        </template>
+      </Slider>
+      <Slider :max-value="10" :min-value="0" :step="1" label="Price" :value-format="(value: string) => `$${value}`"></Slider>
+      <Slider :max-value="200" :min-value="0" :step="1" label="有label没value" :value-format="false"></Slider>
       <Slider :max-value="1" :min-value="0" :step="0.1"></Slider>
 
+    </div>
 
-
-
+    <div>
+      带有 step，并且要对结果保留小数时，可能会有数据偏移，导致鼠标位置偏了点
     </div>
   </div>
 

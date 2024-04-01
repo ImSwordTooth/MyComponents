@@ -19,5 +19,9 @@ export const router = createRouter({
             path: '/slider',
             component: () => import('./views/SliderView.vue')
         },
+        {
+            path: '/checkbox',
+            component: () => import('./views/CheckboxView.vue')
+        },
     ]
 })
