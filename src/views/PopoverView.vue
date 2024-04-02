@@ -7,6 +7,9 @@
 <!--		<Button :variant="'flat'">右下</Button>-->
 
 		<Popover>
+			<template #content>
+				tsadjisaj
+			</template>
 			<div class="base">我是一段文本</div>
 		</Popover>
 
