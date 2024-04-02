@@ -34,8 +34,7 @@
         <div class="desc">是否禁用按钮</div>
       </div>
       <div class="flex">
-        <input type="checkbox" :value="isDisabled" @input="changeIsDisabled" />
-        {{isDisabled}}
+		  <Checkbox :is-checked="isDisabled" @change="changeIsDisabled">{{isDisabled}}</Checkbox>
       </div>
     </div>
 
@@ -92,6 +91,7 @@
 <script setup lang="ts">
 import Button from "../components/Button.vue";
 import {ref} from "vue";
+import Checkbox from "../components/Checkbox.vue";
 // import {  } from '@types/html'
 const variantList = [
     'solid',
@@ -107,7 +107,7 @@ const loadingText = ref<string>('')
 const startContent = ref<string | HTMLElement>('')
 const endContent = ref<string | HTMLElement>()
 
-const changeIsDisabled = (e: Event) => isDisabled.value = (e.target as HTMLInputElement).checked;
+const changeIsDisabled = (checked: boolean) => isDisabled.value = checked;
 const changeIsLoading = (e: Event) => isLoading.value = (e.target as HTMLInputElement).checked;
 const changeLoadingText = (e: Event) => loadingText.value = (e.target as HTMLInputElement).value;
 const changeStartContent = (e: Event) => startContent.value = (e.target as HTMLInputElement).value;

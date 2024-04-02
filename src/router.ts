@@ -23,5 +23,9 @@ export const router = createRouter({
             path: '/checkbox',
             component: () => import('./views/CheckboxView.vue')
         },
+		{
+			path: '/popover',
+			component: () => import('./views/PopoverView.vue')
+		},
     ]
 })

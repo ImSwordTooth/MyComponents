@@ -1,165 +1,202 @@
 <template>
-  <div
-      :class="['boxWp', isPressing ? 'isPressing' : '', isDisable ? 'isDisable' : '']"
-      @mousedown="isPressing = true"
-      @mouseup="isPressing = false"
-      @click="toggleIsChecked"
-  >
-    <div class="box">
-      <div :class="['checkedbox', isInit ? 'init' : '', isChecked ? 'enter' : 'leave']">
-        <svg aria-hidden="true" role="presentation" viewBox="0 0 17 18" class="z-10 opacity-0 group-data-[selected=true]:opacity-100 w-4 h-3 transition-opacity motion-reduce:transition-none"><polyline fill="none" points="1 9 7 14 15 4" stroke="currentColor" stroke-dasharray="22" stroke-dashoffset="44" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" style="transition: stroke-dashoffset 250ms linear 0.2s;"></polyline></svg>
-        <div class="svgMask" />
-      </div>
-    </div>
-    <div class="labelContent">
-      <slot></slot>
-    </div>
-  </div>
-
+	<div
+		:class="{ 'boxWp': true, 'isPressing': isPressing, 'isDisable': isDisable, 'isReadOnly': isReadOnly }"
+		@mousedown="startPressing"
+		@click="toggleIsChecked"
+	>
+		<div class="box">
+			<div
+				:class="['checkedbox', { 'init': isInit }, (isChecked === undefined ? innerChecked : isChecked) ? 'enter' : 'leave']">
+				<slot name="icon">
+					<svg aria-hidden="true" role="presentation" viewBox="0 0 17 18" class="z-10 opacity-0 group-data-[selected=true]:opacity-100 w-4 h-3 transition-opacity motion-reduce:transition-none">
+						<polyline fill="none" points="1 9 7 14 15 4" stroke="currentColor" stroke-dasharray="22" stroke-dashoffset="44" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" style="transition: stroke-dashoffset 250ms linear 0.2s;"></polyline>
+					</svg>
+				</slot>
+				<div class="svgMask" v-if="!slots.icon"/>
+			</div>
+		</div>
+		<div class="labelContent">
+			<slot></slot>
+		</div>
+	</div>
 </template>
 <script setup lang="ts">
 import {ref, watch} from 'vue'
-defineProps<{
-  isDisable?: boolean
-}>()
-const slots= defineSlots<{
-  default: any
+
+const props = withDefaults(defineProps<{
+	isDisable?: boolean // 是否禁用
+	isReadOnly?: boolean // 是否只读
+	isChecked?: boolean | undefined // value 值，受控
+	defaultChecked?: boolean // 默认 value，非受控
+}>(), {
+	isChecked: undefined,
+	defaultChecked: false
+});
+
+const slots = defineSlots<{
+	default: never,
+	icon: never
+}>();
+
+const emits = defineEmits<{
+	change: [checked: boolean]
 }>()
 
-const isChecked = ref<boolean>(false)
-const isPressing = ref<boolean>(false)
-const isInit = ref<boolean>(true)
+const innerChecked = ref<boolean>(props.defaultChecked) // 内部的 value，如果没有受控的值
+const isPressing = ref<boolean>(false); // 是否被按下
+const isInit = ref<boolean>(true) // 是否初次显示，初次显示时不需要动画效果
 
-const toggleIsChecked = (): void => {
-  isChecked.value = !isChecked.value
+const startPressing = () => { // 开始按下
+	isPressing.value = true;
+
+	const cancelPressing = () => {
+		isPressing.value = false;
+		document.removeEventListener('mouseup', cancelPressing);
+	}
+	document.addEventListener('mouseup', cancelPressing); // 抬起效果要加在 document 上
 }
 
-watch(isChecked, () => {
-  if (isInit) {
-    isInit.value = false;
-  }
+const toggleIsChecked = (): void => {
+	if (props.isChecked === undefined) {
+		innerChecked.value = !innerChecked.value
+	}
+
+	emits('change', !props.isChecked)
+}
+
+watch(() => (props.isChecked === undefined ? innerChecked : props.isChecked), () => {
+	isInit.value = false;
 }, {
-  once: true
+	once: true,
+	deep: true
 })
 </script>
 <style scoped lang="scss">
 .boxWp {
-  cursor: pointer;
-  user-select: none;
+	display: flex;
+	align-items: center;
+	cursor: pointer;
+	user-select: none;
 
-  &.isDisable {
-    opacity: .5;
-    pointer-events: none;
-  }
+	&.isDisable {
+		opacity: .5;
+		pointer-events: none;
+	}
 
-  &:hover {
-    .box {
-      background-color: hsl(240 5% 96%);
-    }
-  }
+	&.isReadOnly {
+		pointer-events: none;
+	}
 
-  &.isPressing {
-    .box {
-      transform: matrix(0.95, 0, 0, 0.95, 0, 0);
-    }
-  }
+	&:hover {
+		.box {
+			background-color: hsl(240 5% 96%);
+		}
+	}
 
-  .box {
-    width: 16px;
-    height: 16px;
-    border: 2px solid hsl(240 5% 84%);
-    border-radius: 8px;
-    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, transform;
-    transition-timing-function: ease;
-    transition-duration: .25s;
-    position: relative;
+	&.isPressing {
+		.box {
+			transform: matrix(0.95, 0, 0, 0.95, 0, 0);
+		}
+	}
+
+	.box {
+		width: 16px;
+		height: 16px;
+		border: 2px solid hsl(240 5% 84%);
+		border-radius: 8px;
+		transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, transform;
+		transition-timing-function: ease;
+		transition-duration: .25s;
+		position: relative;
+		margin-right: 8px;
+
+		.checkedbox {
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			left: -2px;
+			top: -2px;
+			border: 2px solid $primaryColor;
+			border-radius: 8px;
+			background-color: $primaryColor;
+			color: #ffffff;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			overflow: hidden;
 
 
-    .checkedbox {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      left: -2px;
-      top: -2px;
-      border: 2px solid $primaryColor;
-      border-radius: 8px;
-      background-color: $primaryColor;
-      color: #ffffff;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
+			&.enter {
+				animation: smallToBig ease .3s forwards;
 
+				.svgMask {
+					animation: toLeft ease .5s forwards .2s;
+				}
+			}
 
-      &.enter {
-        animation: smallToBig ease .3s forwards;
+			&.leave {
+				opacity: 0;
+				animation: BigToSmall ease .3s forwards;
+			}
 
-        .svgMask {
-          animation: toLeft ease .5s forwards;
-        }
-      }
-      &.leave {
-        opacity: 0;
-        animation: BigToSmall ease .3s forwards;
-      }
+			&.init {
+				animation: none;
 
-      &.init {
-        animation: none;
-        .svgMask {
-          display: none;
-        }
-      }
+				.svgMask {
+					display: none;
+				}
+			}
 
-      svg {
-        width: 16px;
-        height: 12px;
-      }
+			svg {
+				width: 16px;
+				height: 12px;
+			}
 
-      .svgMask {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background-color: $primaryColor;
-        animation-delay: 1s;
-        z-index: 3;
-      }
+			:deep(img) {
+				width: 100%;
+				height: 100%;
+			}
 
-    }
-  }
+			.svgMask {
+				position: absolute;
+				left: 0;
+				top: 0;
+				width: 100%;
+				height: 100%;
+				background-color: $primaryColor;
+			}
+		}
+	}
 }
 
 @keyframes smallToBig {
-  0% {
-    transform: scale(0.5);
-    opacity: 0;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
+	0% {
+		transform: scale(0.5);
+		opacity: 0;
+	}
+	100% {
+		transform: scale(1);
+		opacity: 1;
+	}
 }
 
 @keyframes BigToSmall {
-  0% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(0.5);
-    opacity: 0;
-  }
+	0% {
+		transform: scale(1);
+		opacity: 1;
+	}
+	100% {
+		transform: scale(0.5);
+		opacity: 0;
+	}
 }
-
 
 @keyframes toLeft {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(100%);
-  }
+	0% {
+		transform: translateX(0);
+	}
+	100% {
+		transform: translateX(100%);
+	}
 }
-
 </style>
