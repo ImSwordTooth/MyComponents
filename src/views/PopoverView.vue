@@ -1,31 +1,51 @@
 <template>
 	<div class="popoverView">
-<!--		<Button cl :variant="'bordered'">左上</Button>-->
-<!--		<Button variant="light">右上</Button>-->
-<!--		<Button class="center">中间位置</Button>-->
-<!--		<Button :variant="'ghost'">左下</Button>-->
-<!--		<Button :variant="'flat'">右下</Button>-->
-
-		<Popover>
+		<Popover :placement="placement" v-for="placement of placementList" :key="placement">
 			<template #content>
-				tsadjisaj
+				<div class="content">
+					我是 Popover 上的文本
+				</div>
 			</template>
-			<div class="base">我是一段文本</div>
+			<div class="base">我是 {{ placement }}</div>
 		</Popover>
-
 	</div>
 </template>
 <script setup lang="ts">
 import Popover from "../components/Popover.vue";
+
+const placementList = [
+	"top",
+	"top-start",
+	"top-end",
+	"bottom",
+	"bottom-start",
+	"bottom-end",
+	"right",
+	"right-start",
+	"right-end",
+	"left",
+	"left-start",
+	"left-end"
+]
 </script>
 <style scoped lang="scss">
 .popoverView {
 	position: relative;
 	height: 500px;
+	display: grid;
+	grid-template-columns: repeat(3, 140px);
+	grid-template-rows: repeat(4, 60px);
+	gap: 100px 250px;
+	align-items: center;
+	padding-top: 100px;
 	.base {
-		position: absolute;
-		left: 50%;
-		top: 50%;
+		display: inline-flex;
+		width: 140px;
+		height: 60px;
+		align-items: center;
+		justify-content: center;
+		border-radius: 12px;
+		border: solid 1px red;
 	}
 }
 </style>
