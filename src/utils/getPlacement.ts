@@ -17,61 +17,57 @@ type Placement =
 	| "right-start"
 	| "right-end";
 
-export const getPlacement = (baseElementRect: DOMRect, targetElementRect: DOMRect, placement: Placement = "bottom"): ShowLocation => {
+export const getPlacement = (baseElementRect: DOMRect, targetElementRect: DOMRect, placement: Placement = "bottom", offset: number): ShowLocation => {
 	const { left: baseLeft, top: baseTop, width: baseWidth, height: baseHeight, bottom: baseBottom, right: baseRight} = baseElementRect
-	const { left: targetLeft, top: targetTop, width: targetWidth, height: targetHeight } = targetElementRect
+	const { width: targetWidth, height: targetHeight } = targetElementRect
 
-	console.log(baseElementRect)
-
-	const offsetY = 8;
-	const offsetX = 8;
 	switch (placement) {
 		case 'top': return {
 			left: `${baseLeft + baseWidth/2 - targetWidth/2}px`,
-			top: `${baseTop - targetHeight - offsetY}px`
+			top: `${baseTop - targetHeight - offset}px`
 		}
 		case 'bottom': return {
 			left: `${baseLeft + baseWidth/2 - targetWidth/2}px`,
-			top: `${baseBottom + offsetY}px`
+			top: `${baseBottom + offset}px`
 		}
 		case 'right': return {
-			left: `${baseRight + offsetX}px`,
+			left: `${baseRight + offset}px`,
 			top: `${baseTop + baseHeight/2 - targetHeight/2}px`
 		}
 		case 'left': return {
-			left: `${baseLeft - targetWidth - offsetX}px`,
+			left: `${baseLeft - targetWidth - offset}px`,
 			top: `${baseTop + baseHeight/2 - targetHeight/2}px`
 		}
 		case 'top-start': return {
 			left: `${baseLeft}px`,
-			top: `${baseTop - targetHeight - offsetY}px`
+			top: `${baseTop - targetHeight - offset}px`
 		}
 		case 'top-end': return {
 			left: `${baseRight - targetWidth}px`,
-			top: `${baseTop - targetHeight - offsetY}px`
+			top: `${baseTop - targetHeight - offset}px`
 		}
 		case 'bottom-start': return {
 			left: `${baseLeft}px`,
-			top: `${baseBottom + offsetY}px`
+			top: `${baseBottom + offset}px`
 		}
 		case 'bottom-end': return {
 			left: `${baseRight - targetWidth}px`,
-			top: `${baseBottom + offsetY}px`
+			top: `${baseBottom + offset}px`
 		}
 		case 'right-start': return {
-			left: `${baseRight + offsetX}px`,
+			left: `${baseRight + offset}px`,
 			top: `${baseTop}px`
 		}
 		case 'right-end': return {
-			left: `${baseRight + offsetX}px`,
+			left: `${baseRight + offset}px`,
 			top: `${baseTop + baseHeight - targetHeight}px`
 		}
 		case 'left-start': return {
-			left: `${baseLeft - targetWidth - offsetX}px`,
+			left: `${baseLeft - targetWidth - offset}px`,
 			top: `${baseTop}px`
 		}
 		case 'left-end': return {
-			left: `${baseLeft - targetWidth - offsetX}px`,
+			left: `${baseLeft - targetWidth - offset}px`,
 			top: `${baseTop + baseHeight - targetHeight}px`
 		}
 	}
