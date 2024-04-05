@@ -2,7 +2,7 @@
 	<div>
 		<h2>Checkbox - 复选框</h2>
 	</div>
-  <Checkbox :is-checked="firstChecked" @change="handleFirstChecked">受控的 checkbox, 现在的值是：<strong>{{ firstChecked }}</strong></Checkbox>
+  <Checkbox v-model:check="firstChecked">受控的 checkbox, 现在的值是：<strong>{{ firstChecked }}</strong></Checkbox>
   <Checkbox :default-checked="false">非受控</Checkbox>
   <Checkbox :default-checked="true"></Checkbox>
 
@@ -41,9 +41,9 @@ import Checkbox from "../components/Checkbox.vue";
 import {ref} from "vue";
 
 const firstChecked = ref<boolean>(true)
-const handleFirstChecked = (checked: boolean): void => {
-  firstChecked.value = checked
-}
+// const handleFirstChecked = (checked: boolean): void => {
+//   firstChecked.value = checked
+// }
 </script>
 <style scoped>
 

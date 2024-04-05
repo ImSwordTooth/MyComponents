@@ -11,6 +11,7 @@
 				:style="contentLocation"
 				v-show="open"
 				:data-placement="placement"
+				:data-small="IsSmallContent"
 			>
 				<slot name="content"></slot>
 			</div>
@@ -44,6 +45,8 @@ const props = withDefaults(defineProps<{
 	withArrow: true
 })
 
+const open = defineModel<boolean>('open')
+
 const slots = defineSlots<{
 	default: never
 	content: never
@@ -54,7 +57,7 @@ const contentChildren = ref()
 const contentLocation = ref({})
 const contentObserver = ref<MutationObserver|null>(null)
 
-const open = ref<boolean>(false) // 是否显示 Popover
+// const open = ref<boolean>(false) // 是否显示 Popover
 const isEnter = ref<boolean>(false) // 是否显示 Popover，但是用于控制 Popover 的动画。如果直接把 open 给取消掉，就没有退场动画了
 
 const baseElementRect = computed((): DOMRect => {
@@ -63,6 +66,18 @@ const baseElementRect = computed((): DOMRect => {
 })
 const contentElementRect = computed((): DOMRect => {
 	return contentChildren.value.getBoundingClientRect();
+})
+
+const IsSmallContent = computed(() => {
+	if (contentChildren.value) {
+		const { width, height } = contentChildren.value.getBoundingClientRect() as DOMRect;
+		if (props.placement.indexOf('top') > -1 || props.placement.indexOf('bottom') > -1) {
+			return width <= 20;
+		} else {
+			return height <= 20;
+		}
+	}
+	return false;
 })
 
 
@@ -132,6 +147,8 @@ watch([() => props.placement, open], getLocation)
 .PopoverContent {
 	padding: 4px 10px;
 	position: absolute;
+	z-index: 9999;
+	background: #ffffff;
 	box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px,
 				rgba(0, 0, 0, 0) 0px 0px 0px 0px,
 				rgba(0, 0, 0, 0.03) 0px 0px 15px 0px,
@@ -198,6 +215,10 @@ watch([() => props.placement, open], getLocation)
 		border-top: solid 6px #ffffff;
 		filter: drop-shadow(0px 1px 1px rgba(0, 0, 0, 0.1));
 	}
+	&[data-placement="top-start"][data-small="true"]::after {
+		left: 0;
+		right: 0;
+	}
 	&[data-placement="top-end"]::after {
 		right: 20px;
 		bottom: -6px;
@@ -205,6 +226,10 @@ watch([() => props.placement, open], getLocation)
 		border-right: solid 6px transparent;
 		border-top: solid 6px #ffffff;
 		filter: drop-shadow(0px 1px 1px rgba(0, 0, 0, 0.1));
+	}
+	&[data-placement="top-end"][data-small="true"]::after {
+		left: 0;
+		right: 0;
 	}
 	&[data-placement="bottom-start"]::after {
 		left: 20px;
@@ -214,6 +239,10 @@ watch([() => props.placement, open], getLocation)
 		border-bottom: solid 6px #ffffff;
 		filter: drop-shadow(0px -1px 1px rgba(0, 0, 0, 0.1));
 	}
+	&[data-placement="bottom-start"][data-small="true"]::after {
+		left: 0;
+		right: 0;
+	}
 	&[data-placement="bottom-end"]::after {
 		right: 20px;
 		top: -6px;
@@ -221,6 +250,10 @@ watch([() => props.placement, open], getLocation)
 		border-right: solid 6px transparent;
 		border-bottom: solid 6px #ffffff;
 		filter: drop-shadow(0px -1px 1px rgba(0, 0, 0, 0.1));
+	}
+	&[data-placement="bottom-end"][data-small="true"]::after {
+		left: 0;
+		right: 0;
 	}
 	&[data-placement="left-start"]::after {
 		right: -6px;
@@ -230,6 +263,10 @@ watch([() => props.placement, open], getLocation)
 		border-left: solid 6px #ffffff;
 		filter: drop-shadow(1px 0px 1px rgba(0, 0, 0, 0.1));
 	}
+	&[data-placement="left-start"][data-small="true"]::after {
+		top: 0;
+		bottom: 0;
+	}
 	&[data-placement="left-end"]::after {
 		right: -6px;
 		bottom: 20px;
@@ -237,6 +274,10 @@ watch([() => props.placement, open], getLocation)
 		border-bottom: solid 6px transparent;
 		border-left: solid 6px #ffffff;
 		filter: drop-shadow(1px 0px 1px rgba(0, 0, 0, 0.1));
+	}
+	&[data-placement="left-end"][data-small="true"]::after {
+		top: 0;
+		bottom: 0;
 	}
 	&[data-placement="right-start"]::after {
 		left: -6px;
@@ -246,6 +287,10 @@ watch([() => props.placement, open], getLocation)
 		border-right: solid 6px #ffffff;
 		filter: drop-shadow(-1px 0px 1px rgba(0, 0, 0, 0.1));
 	}
+	&[data-placement="right-start"][data-small="true"]::after {
+		top: 0;
+		bottom: 0;
+	}
 	&[data-placement="right-end"]::after {
 		left: -6px;
 		bottom: 20px;
@@ -253,6 +298,10 @@ watch([() => props.placement, open], getLocation)
 		border-bottom: solid 6px transparent;
 		border-right: solid 6px #ffffff;
 		filter: drop-shadow(-1px 0px 1px rgba(0, 0, 0, 0.1));
+	}
+	&[data-placement="right-end"][data-small="true"]::after {
+		top: 0;
+		bottom: 0;
 	}
 
 }

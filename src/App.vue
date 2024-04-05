@@ -7,6 +7,7 @@
       <RouterLink to="/slider" class="link">滑动输入框</RouterLink>
       <RouterLink to="/checkbox" class="link">复选框</RouterLink>
       <RouterLink to="/popover" class="link">Popover</RouterLink>
+      <RouterLink to="/switch" class="link">切换</RouterLink>
     </div>
     <div class="rightPart">
       <RouterView />

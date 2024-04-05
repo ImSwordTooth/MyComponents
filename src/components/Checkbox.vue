@@ -26,12 +26,14 @@ import {ref, watch} from 'vue'
 const props = withDefaults(defineProps<{
 	isDisable?: boolean // 是否禁用
 	isReadOnly?: boolean // 是否只读
-	isChecked?: boolean | undefined // value 值，受控
+	// isChecked?: boolean | undefined // value 值，受控
 	defaultChecked?: boolean // 默认 value，非受控
 }>(), {
-	isChecked: undefined,
+	// isChecked: undefined,
 	defaultChecked: false
 });
+
+const isChecked = defineModel<boolean | undefined>('check')
 
 const slots = defineSlots<{
 	default: never,
@@ -39,7 +41,7 @@ const slots = defineSlots<{
 }>();
 
 const emits = defineEmits<{
-	change: [checked: boolean]
+	(e: 'change', checked: boolean): void
 }>()
 
 const innerChecked = ref<boolean>(props.defaultChecked) // 内部的 value，如果没有受控的值
@@ -57,14 +59,15 @@ const startPressing = () => { // 开始按下
 }
 
 const toggleIsChecked = (): void => {
-	if (props.isChecked === undefined) {
+	if (isChecked === undefined) {
 		innerChecked.value = !innerChecked.value
+		emits('change', innerChecked.value)
+	} else {
+		isChecked.value = !isChecked.value;
 	}
-
-	emits('change', !props.isChecked)
 }
 
-watch(() => (props.isChecked === undefined ? innerChecked : props.isChecked), () => {
+watch(() => (isChecked === undefined ? innerChecked : isChecked), () => {
 	isInit.value = false;
 }, {
 	once: true,

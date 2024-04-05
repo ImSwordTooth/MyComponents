@@ -27,5 +27,9 @@ export const router = createRouter({
 			path: '/popover',
 			component: () => import('./views/PopoverView.vue')
 		},
+		{
+			path: '/switch',
+			component: () => import('./views/SwitchView.vue')
+		},
     ]
 })

@@ -34,7 +34,7 @@
         <div class="desc">是否禁用按钮</div>
       </div>
       <div class="flex">
-		  <Checkbox :is-checked="isDisabled" @change="changeIsDisabled">{{isDisabled}}</Checkbox>
+		  <Checkbox v-model:check="isDisabled">{{isDisabled}}</Checkbox>
       </div>
     </div>
 
@@ -44,11 +44,8 @@
 
       </div>
       <div class="flex">
-        <input type="checkbox" :value="isLoading" @input="changeIsLoading" />
-        {{isLoading}}
+		  <Checkbox v-model:check="isLoading">{{isLoading}}</Checkbox>
       </div>
-      <div class="desc">是否正在加载</div>
-
     </div>
 
     <div class="prop">
