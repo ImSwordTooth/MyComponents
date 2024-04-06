@@ -28,6 +28,10 @@ html,body {
 	height: 100%;
 }
 
+* {
+	box-sizing: border-box;
+}
+
 a {
   font-weight: 500;
   color: #646cff;

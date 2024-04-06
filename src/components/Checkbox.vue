@@ -59,6 +59,7 @@ const startPressing = () => { // 开始按下
 }
 
 const toggleIsChecked = (): void => {
+	console.log(isChecked)
 	if (isChecked === undefined) {
 		innerChecked.value = !innerChecked.value
 		emits('change', innerChecked.value)
@@ -103,8 +104,8 @@ watch(() => (isChecked === undefined ? innerChecked : isChecked), () => {
 	}
 
 	.box {
-		width: 16px;
-		height: 16px;
+		width: 20px;
+		height: 20px;
 		border: 2px solid hsl(240 5% 84%);
 		border-radius: 8px;
 		transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, transform;
@@ -127,6 +128,7 @@ watch(() => (isChecked === undefined ? innerChecked : isChecked), () => {
 			align-items: center;
 			justify-content: center;
 			overflow: hidden;
+			box-sizing: content-box;
 
 
 			&.enter {
