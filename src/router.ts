@@ -31,5 +31,9 @@ export const router = createRouter({
 			path: '/switch',
 			component: () => import('./views/SwitchView.vue')
 		},
+		{
+			path: '/select',
+			component: () => import('./views/SelectView.vue')
+		},
     ]
 })

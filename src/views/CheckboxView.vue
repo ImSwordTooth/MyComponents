@@ -2,9 +2,10 @@
 	<div>
 		<h2>Checkbox - 复选框</h2>
 	</div>
-  <Checkbox v-model:check="firstChecked">受控的 checkbox, 现在的值是：<strong>{{ firstChecked }}</strong></Checkbox>
-  <Checkbox :default-checked="false">非受控</Checkbox>
-  <Checkbox :default-checked="true"></Checkbox>
+  <Checkbox v-model:check="firstChecked">受控的 checkbox,只写了 v-model:check， 现在的值是：<strong>{{ firstChecked }}</strong></Checkbox>
+  <Checkbox :default-checked="false" @change="changeValue">非受控默认false，只写了 defaultChecked 和 @change</Checkbox>
+  <Checkbox :default-checked="true" @change="changeValue">非受控默认true，只写了 defaultChecked 和 @change</Checkbox>
+  <Checkbox :check="firstChecked">非受控，只写了 check，没有 @change</Checkbox>
 
   <Checkbox>
     <template #icon>
@@ -38,12 +39,13 @@
 </template>
 <script setup lang="ts">
 import Checkbox from "../components/Checkbox.vue";
-import {ref} from "vue";
+import { ref } from "vue";
 
 const firstChecked = ref<boolean>(true)
-// const handleFirstChecked = (checked: boolean): void => {
-//   firstChecked.value = checked
-// }
+
+const changeValue = (value: boolean) => {
+	firstChecked.value = value;
+}
 </script>
 <style scoped>
 

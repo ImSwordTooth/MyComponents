@@ -6,7 +6,7 @@
 	>
 		<div class="box">
 			<div
-				:class="['checkedbox', { 'init': isInit }, (isChecked === undefined ? innerChecked : isChecked) ? 'enter' : 'leave']">
+				:class="['checkedbox', { 'init': isInit }, (defaultChecked !== undefined ? innerChecked : isChecked) ? 'enter' : 'leave']">
 				<slot name="icon">
 					<svg aria-hidden="true" role="presentation" viewBox="0 0 17 18" class="z-10 opacity-0 group-data-[selected=true]:opacity-100 w-4 h-3 transition-opacity motion-reduce:transition-none">
 						<polyline fill="none" points="1 9 7 14 15 4" stroke="currentColor" stroke-dasharray="22" stroke-dashoffset="44" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" style="transition: stroke-dashoffset 250ms linear 0.2s;"></polyline>
@@ -26,14 +26,12 @@ import {ref, watch} from 'vue'
 const props = withDefaults(defineProps<{
 	isDisable?: boolean // 是否禁用
 	isReadOnly?: boolean // 是否只读
-	// isChecked?: boolean | undefined // value 值，受控
-	defaultChecked?: boolean // 默认 value，非受控
+	defaultChecked?: boolean | undefined // 默认 value，非受控
 }>(), {
-	// isChecked: undefined,
-	defaultChecked: false
+	defaultChecked: undefined
 });
 
-const isChecked = defineModel<boolean | undefined>('check')
+const isChecked = defineModel<boolean | undefined>('check', { })
 
 const slots = defineSlots<{
 	default: never,
@@ -44,7 +42,7 @@ const emits = defineEmits<{
 	(e: 'change', checked: boolean): void
 }>()
 
-const innerChecked = ref<boolean>(props.defaultChecked) // 内部的 value，如果没有受控的值
+const innerChecked = ref<boolean>(!!props.defaultChecked) // 内部的 value，如果没有受控的值
 const isPressing = ref<boolean>(false); // 是否被按下
 const isInit = ref<boolean>(true) // 是否初次显示，初次显示时不需要动画效果
 
@@ -59,16 +57,16 @@ const startPressing = () => { // 开始按下
 }
 
 const toggleIsChecked = (): void => {
-	console.log(isChecked)
-	if (isChecked === undefined) {
+	if (props.defaultChecked !== undefined) {
 		innerChecked.value = !innerChecked.value
 		emits('change', innerChecked.value)
 	} else {
 		isChecked.value = !isChecked.value;
+		emits('change', isChecked.value)
 	}
 }
 
-watch(() => (isChecked === undefined ? innerChecked : isChecked), () => {
+watch(() => (props.defaultChecked !== undefined ? innerChecked : isChecked), () => {
 	isInit.value = false;
 }, {
 	once: true,

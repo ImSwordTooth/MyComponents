@@ -1,10 +1,10 @@
 <template>
 	<div :class="['switch', { 'disable': isDisable }]" @click="changeValue" @mousedown="startPressing">
-		<div class="thumb" :data-value="value === undefined ? innerValue : value" :data-test="value === undefined">
+		<div class="thumb" :data-value="defaultValue !== undefined ? innerValue : value" :data-test="value === undefined">
 			<div class="block" :data-pressing="isPressing">
-				<slot name="trueIcon" v-if="value === undefined ? innerValue : value"></slot>
+				<slot name="trueIcon" v-if="defaultValue !== undefined ? innerValue : value"></slot>
 
-				<slot name="falseIcon" v-if="!(value === undefined ? innerValue : value)"></slot>
+				<slot name="falseIcon" v-if="!(defaultValue !== undefined ? innerValue : value)"></slot>
 			</div>
 		</div>
 		<slot></slot>
@@ -12,10 +12,12 @@
 </template>
 <script setup lang="ts">
 import {ref} from "vue";
-const props = defineProps<{
+const props = withDefaults(defineProps<{
 	isDisable?: boolean
-	defaultValue?: boolean
-}>()
+	defaultValue?: boolean | undefined
+}>(), {
+	defaultValue: undefined
+})
 
 const emits = defineEmits<{
 	(e: 'change', value: boolean): void
@@ -29,16 +31,16 @@ defineSlots<{
 
 const value = defineModel<boolean | undefined>('value')
 
-const innerValue = ref<boolean>(props.defaultValue)
+const innerValue = ref<boolean>(!!props.defaultValue)
 const isPressing = ref<boolean>(false)
 
 const changeValue = () => {
-	console.log(value)
-	if (value !== undefined) {
-		value.value = !value.value;
-	} else {
+	if (props.defaultValue !== undefined) {
 		innerValue.value = !innerValue.value
 		emits('change', innerValue.value)
+	} else {
+		value.value = !value.value;
+		emits('change', value.value)
 	}
 }
 

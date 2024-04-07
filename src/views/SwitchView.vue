@@ -1,7 +1,7 @@
 <template>
 	<p><Switch :default-value="switchValue" :is-disable="isDisabled" @change="changeValue"></Switch></p>
 
-	<p><Switch v-model:value="switchValue" :is-disable="isDisabled">withLabel</Switch></p>
+	<p><Switch :value="switchValue" :is-disable="isDisabled">withLabel</Switch></p>
 
 	<p>
 		<Switch v-model:value="switchValue" :is-disable="isDisabled">
@@ -27,8 +27,6 @@
 		</div>
 	</div>
 
-
-	<div>重新看下是否受控</div>
 </template>
 <script setup lang="ts">
 import Switch from "../components/Switch.vue";
@@ -40,7 +38,6 @@ const switchValue2 = ref<boolean>(false)
 const isDisabled = ref<boolean>(false)
 
 const changeValue = (value: boolean) => {
-	console.log(value)
 	switchValue.value = value
 }
 </script>

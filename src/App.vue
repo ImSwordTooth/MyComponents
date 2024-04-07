@@ -8,6 +8,7 @@
       <RouterLink to="/checkbox" class="link">复选框</RouterLink>
       <RouterLink to="/popover" class="link">Popover</RouterLink>
       <RouterLink to="/switch" class="link">切换</RouterLink>
+      <RouterLink to="/select" class="link">选择器</RouterLink>
     </div>
     <div class="rightPart">
       <RouterView />
