@@ -57,7 +57,6 @@ const contentChildren = ref()
 const contentLocation = ref({})
 const contentObserver = ref<MutationObserver|null>(null)
 
-// const open = ref<boolean>(false) // 是否显示 Popover
 const isEnter = ref<boolean>(false) // 是否显示 Popover，但是用于控制 Popover 的动画。如果直接把 open 给取消掉，就没有退场动画了
 
 const baseElementRect = computed((): DOMRect => {
@@ -89,10 +88,7 @@ const getLocation = (): void => {
 			contentLocation.value = getPlacement(defaultChildren.value.children[0].getBoundingClientRect(), adjustedBoundingRect(contentChildren.value), props.placement, props.offset)
 		}
 	})
-
 }
-
-
 
 const openContent = () => {
 	open.value = true;
