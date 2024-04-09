@@ -1,21 +1,20 @@
 <template>
-  <div class="slider">
-    <div class="textPart">
-      <div class="label">
-        <slot name="label">{{ label }}</slot>
-      </div>
-      <div v-if="valueFormat">
-        <template v-if="typeof valueFormat === 'boolean'">{{ sliderValue }}</template>
-        <template v-else>{{ valueFormat(sliderValue) }}</template>
-      </div>
-    </div>
-    <div class="sliderInner" ref="sliderInner">
-      <div class="sliderThumb" :style="{ height: `${thumbHeight || 10}px` }"></div>
-      <div class="sliderTube" :style="{ width: `${sliderPercent}%` }"></div>
-      <div :class="['sliderButton', isStart ? 'draging' : '']" :style="{ left: `${sliderPercent}%` }" @mousedown="startDrag" />
-    </div>
-  </div>
-
+	<div class="slider" :style="{ width: width ? `${width}px` : '100%' }">
+		<div class="textPart">
+			<div class="label">
+				<slot name="label">{{ label }}</slot>
+			</div>
+			<div v-if="valueFormat">
+				<template v-if="typeof valueFormat === 'boolean'">{{ sliderValue }}</template>
+				<template v-else>{{ valueFormat(sliderValue) }}</template>
+			</div>
+		</div>
+		<div class="sliderInner" ref="sliderInner">
+			<div class="sliderThumb" :style="{ height: `${thumbHeight || 10}px` }" />
+			<div class="sliderTube" :style="{ width: `${sliderPercent}%` }" />
+			<div :class="['sliderButton', isStart ? 'draging' : '']" :style="{ left: `${sliderPercent}%` }" @mousedown="startDrag" />
+		</div>
+	</div>
 </template>
 
 <script setup lang="ts">
@@ -23,12 +22,13 @@ import {computed, nextTick, onMounted, ref, SlotsType} from 'vue';
 
 
 const props = withDefaults(defineProps<{
-  minValue: number // 最小值
-  maxValue: number // 最大值
-  step: number // 每一格的值
-  thumbHeight?: number // 轨道高度
-  label?: string | SlotsType
-  valueFormat?: boolean | ((value: number) => string)
+	minValue: number // 最小值
+	maxValue: number // 最大值
+	step: number // 每一格的值
+	width?: number // 宽度，不写则为 100%
+	thumbHeight?: number // 轨道高度
+	label?: string | SlotsType
+	valueFormat?: boolean | ((value: number) => string)
 }>(), {
   valueFormat: true
 })
@@ -37,8 +37,8 @@ const slots = defineSlots<{
   label?: any
 }>()
 
+const sliderValue = defineModel<number>('value', { required: true })
 const sliderInner = ref()
-const sliderValue = ref<number>(props.maxValue)
 const sliderPercent = computed(() => {
   return ((sliderValue.value - props.minValue) / props.maxValue) * 100
 })
