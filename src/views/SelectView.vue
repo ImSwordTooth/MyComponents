@@ -35,6 +35,36 @@
 		</Select>
 	</div>
 
+	<div class="part">
+		<Select :width="240" :options="optionList" :list-height="listHeight" :is-clearable="isClearable">
+			<template #option="slotProps">
+				<div class="customOption">
+					<img :src="slotProps.img || 'https://x0.ifengimg.com/ucms/2022_18/0F3C1676F1F0FE2BCE928BF565DE65326A6CA8AC_size231_w440_h434.png'" alt="" />
+
+					<div class="info">
+						{{ slotProps.label }}
+						<div class="desc">
+							{{ slotProps.value }}
+						</div>
+					</div>
+				</div>
+			</template>
+			<template #selectBox="slotProps">
+				<div class="customOption">
+					<img :src="slotProps.selected.img || 'https://x0.ifengimg.com/ucms/2022_18/0F3C1676F1F0FE2BCE928BF565DE65326A6CA8AC_size231_w440_h434.png'" alt="" />
+
+					<div class="info">
+						{{ slotProps.selected.label }}
+						<div class="desc">
+							{{ slotProps.selected.value }}
+						</div>
+					</div>
+				</div>
+			</template>
+
+		</Select>
+	</div>
+
 
 
 	<div class="prop">
@@ -88,7 +118,7 @@ const listHeight = ref<number>(256)
 const isClearable = ref<boolean>(false)
 
 const optionList = ref([
-	{ value: 'PhantomAssassin', label: '幻影刺客' },
+	{ value: 'PhantomAssassin', label: '幻影刺客', img: 'https://img2.baidu.com/it/u=3966599238,416582002&fm=253&fmt=auto&app=120&f=JPEG?w=801&h=500' },
 	{ value: 'Luna', label: '露娜' },
 	{ value: 'Anti-Mage', label: '敌法师' },
 	{ value: 'Juggernaut', label: '主宰' },
@@ -130,6 +160,32 @@ const optionList = ref([
 		font-size: 12px;
 		font-weight: normal;
 	}
+}
+
+.customOption {
+	position: relative;
+	display: flex;
+	align-items: center;
+	height: 36px;
+
+	img {
+		width: 32px;
+		height: 32px;
+		border-radius: 50%;
+		margin-right: 10px;
+
+	}
+
+	.info {
+		padding: 4px 0;
+		.desc {
+			font-size: 12px;
+			line-height: 14px;
+			color: #999999;
+		}
+	}
+
+
 }
 
 </style>

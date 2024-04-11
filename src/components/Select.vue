@@ -7,11 +7,16 @@
 	>
 		<div class="textPart">
 			<div :class="['label', {'withValue': value}]" v-if="label">{{ label }}</div>
-			<div class="value" v-if="value">{{ options.find(o => o.value === value)?.label }}</div>
+			<div class="value" v-if="value">
+				<slot name="selectBox" :selected="options.find(o => o.value === value)">
+					{{ options.find(o => o.value === value)?.label }}
+				</slot>
+
+			</div>
 			<div class="placeholder" v-if="!value && placeholder">{{ placeholder }}</div>
 		</div>
 
-		<svg v-if="isClearable && !!value" @click="clear" class="clearIcon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32">
+		<svg v-if="isClearable && !!value" @mousedown="clear" class="clearIcon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32">
 			<path d="M519.656727 472.459636l-160.512-160.488727a36.584727 36.584727 0 1 0-51.712 51.712l160.488728 160.512-160.488728 160.512a36.584727 36.584727 0 1 0 51.712 51.712l160.512-160.512 160.488728 160.512a36.584727 36.584727 0 1 0 51.735272-51.712l-160.512-160.512 160.512-160.512a36.584727 36.584727 0 1 0-51.735272-51.712L519.68 472.436364zM512 1024C229.236364 1024 0 794.763636 0 512S229.236364 0 512 0s512 229.236364 512 512-229.236364 512-512 512z" />
 		</svg>
 
@@ -20,7 +25,7 @@
 		</svg>
 	</div>
 
-	<teleport to="body" v-if="open">
+	<teleport to="body" v-if="!isFirstOpen">
 		<div
 			class="selectContent"
 			v-show="open"
@@ -31,21 +36,25 @@
 			} "
 		>
 			<div class="optionList" :style="{ maxHeight: `${listHeight}px` }">
-				<li
-					v-for="(option, index) of options"
-					:key="index"
-					:class="{
+				<template v-for="(option, index) of options" :key="index">
+						<li
+							:class="{
 						'active': option.value === value,
 						'disabled': option.disabled
 					}"
-					:data-value="option.value"
-					@click="changeValue"
-				>
-					{{ option.label }}
-					<svg class="rightIcon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="48" height="48">
-						<path d="M149.95456 471.77728a30.72 30.72 0 0 1 41.2672-2.00704l2.19136 2.00704 224.4608 224.4608 412.71296-412.73344a30.72 30.72 0 0 1 41.2672-1.98656l2.19136 1.98656a30.72 30.72 0 0 1 1.98656 41.24672l-1.98656 2.19136-434.46272 434.46272a30.72 30.72 0 0 1-41.24672 1.98656l-2.19136-1.98656-246.1696-246.19008a30.72 30.72 0 0 1 0-43.43808z" fill="#131415" />
-					</svg>
-				</li>
+							:data-value="option.value"
+							@click="changeValue"
+						>
+							<slot  name="option" :label="option.label" :value="option.value" :img="option.img">
+								{{ option.label }}
+							</slot>
+
+							<svg class="rightIcon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="48" height="48">
+								<path d="M149.95456 471.77728a30.72 30.72 0 0 1 41.2672-2.00704l2.19136 2.00704 224.4608 224.4608 412.71296-412.73344a30.72 30.72 0 0 1 41.2672-1.98656l2.19136 1.98656a30.72 30.72 0 0 1 1.98656 41.24672l-1.98656 2.19136-434.46272 434.46272a30.72 30.72 0 0 1-41.24672 1.98656l-2.19136-1.98656-246.1696-246.19008a30.72 30.72 0 0 1 0-43.43808z" fill="#131415" />
+							</svg>
+						</li>
+<!--					</slot>-->
+				</template>
 			</div>
 		</div>
 	</teleport>
@@ -74,8 +83,14 @@ const props = withDefaults(defineProps<{
 	isClearable: false
 })
 
+const slots = defineSlots<{
+	option(props: SelectOptions): never
+	selectBox(obj: SelectOptions): never
+}>()
+
 const value = defineModel<string|number>('value')
 const open = ref<boolean>(false)
+const isFirstOpen = ref<boolean>(true) // 是否为第一次打开，第一次打开后 dom 保留
 
 const baseElement = ref();
 const targetElement = ref();
@@ -90,6 +105,9 @@ const getLocation = () => {
 }
 
 const openOptions = () => {
+	if (isFirstOpen.value) {
+		isFirstOpen.value = false;
+	}
 	open.value = true;
 	document.addEventListener('mousedown', cancelOpen, true)
 }
@@ -102,14 +120,16 @@ const cancelOpen = (e: Event) => {
 }
 
 const changeValue = (e: MouseEvent) => {
-	const { value: optionValue } = (e.target as HTMLLIElement).dataset
+	console.log(e.currentTarget)
+	const { value: optionValue } = (e.currentTarget as HTMLLIElement).dataset
 	value.value = optionValue
 	open.value = false;
 	document.removeEventListener('mousedown', cancelOpen, true);
 }
 
 const clear = (e: Event) => {
-	e.preventDefault();
+	// e.preventDefault();
+	e.stopPropagation()
 	value.value = '';
 }
 
@@ -177,7 +197,18 @@ watch(open, getLocation)
 		}
 	}
 
+	.clearIcon {
+		width: 16px;
+		height: 16px;
+		cursor: pointer;
+		fill: #888888;
+		transition: fill ease .15s;
+		margin-right: 6px;
 
+		&:hover {
+			fill: #000000;
+		}
+	}
 }
 
 .selectContent {
@@ -215,7 +246,7 @@ watch(open, getLocation)
 
 		li {
 			position: relative;
-			height: 32px;
+			//height: 32px;
 			padding: 6px 6px 6px 8px;
 			border-radius: 8px;
 			transition: all .25s ease;
