@@ -65,6 +65,12 @@
 		</Select>
 	</div>
 
+	<div class="part">
+		<Select :options="visualOptionList" label="虚拟列表" :is-visual="true">
+
+		</Select>
+	</div>
+
 
 
 	<div class="prop">
@@ -107,7 +113,7 @@
 </template>
 <script setup lang="ts">
 import Select from "../components/Select.vue";
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 import Slider from "../components/Slider.vue";
 import Checkbox from "../components/Checkbox.vue";
 
@@ -132,6 +138,15 @@ const optionList = ref([
 	{ value: 'Viper', label: '冥界亚龙'},
 	{ value: 'Lich', label: '巫妖'},
 ])
+
+const visualOptionList = ref([])
+
+onMounted(() => {
+	for (let i=0; i<10000; i++) {
+		visualOptionList.value.push({ value: Math.random() })
+	}
+})
+
 </script>
 
 <style scoped lang="scss">
