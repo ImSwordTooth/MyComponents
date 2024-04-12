@@ -1,17 +1,16 @@
 <template>
 	<div
 		:class="['select', { 'withLabel': label }]"
-		:style="{ width: `${typeof width === 'number' ? `${width}px` : width}` }"
+		:style="{ width: `${width}px` }"
 		ref="baseElement"
 		@mousedown="openOptions"
 	>
 		<div class="textPart">
 			<div :class="['label', {'withValue': value}]" v-if="label">{{ label }}</div>
 			<div class="value" v-if="value">
-				<slot name="selectBox" :selected="options.find(o => o.value === value)">
+				<slot name="selectBox" :selected="options.find(o => o.value === value) as SelectOptions">
 					{{ options.find(o => o.value === value)?.label || options.find(o => o.value === value)?.value }}
 				</slot>
-
 			</div>
 			<div class="placeholder" v-if="!value && placeholder">{{ placeholder }}</div>
 		</div>
@@ -31,32 +30,35 @@
 			v-show="open"
 			ref="targetElement"
 			:style="{
-				width: `${optionWidth ? (typeof optionWidth === 'number' ? `${optionWidth}px` : optionWidth) : (typeof width === 'number' ? `${width}px`: width)}`,
+				width: `${optionWidth || width}px`,
 				...location
 			} "
 		>
-			<VisualList v-if="isVisual" :height="listHeight" :per-height="32" :list="options">
+
+			<VisualList class="optionList" v-if="isVisual" :height="listHeight" :per-height="32" :list="options">
 				<template #item="{ props }">
-					<div
+					<li
 						:class="{ 'active': props.value === value, 'disabled': props.disabled }"
 						:data-value="props.value"
 						@click="changeValue"
 					>
-						<div>{{ props.label || props.value }}</div>
+						<slot  name="option" :label="props.label" :value="props.value" :img="props.img">
+							{{ props.label || props.value }}
+						</slot>
 						<svg class="rightIcon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="48" height="48">
 							<path d="M149.95456 471.77728a30.72 30.72 0 0 1 41.2672-2.00704l2.19136 2.00704 224.4608 224.4608 412.71296-412.73344a30.72 30.72 0 0 1 41.2672-1.98656l2.19136 1.98656a30.72 30.72 0 0 1 1.98656 41.24672l-1.98656 2.19136-434.46272 434.46272a30.72 30.72 0 0 1-41.24672 1.98656l-2.19136-1.98656-246.1696-246.19008a30.72 30.72 0 0 1 0-43.43808z" fill="#131415" />
 						</svg>
-					</div>
+					</li>
 				</template>
 			</VisualList>
-			<div  v-else class="optionList" :style="{ maxHeight: `${listHeight}px` }">
-				<template v-for="(option, index) of options" :key="index">
+			<div v-else class="optionList" :style="{ maxHeight: `${listHeight}px` }">
+				<template v-for="option of options" :key="option.value">
 					<li
 						:class="{ 'active': option.value === value, 'disabled': option.disabled }"
 						:data-value="option.value"
 						@click="changeValue"
 					>
-						<slot  name="option" :label="option.label" :value="option.value" :img="option.img">
+						<slot name="option" :label="option.label" :value="option.value" :img="option.img">
 							{{ option.label || option.value }}
 						</slot>
 
@@ -78,19 +80,20 @@ type SelectOptions = {
 	value: string | number
 	label: string
 	disabled?: boolean
+	img?: string
 }
 
 const props = withDefaults(defineProps<{
-	width?: string | number // select 的宽度
+	width?: number // select 的宽度
 	label?: string
 	placeholder?: string
 	options: SelectOptions[]
-	optionWidth?: string | number // option 的宽度，如果不传，则和 Select 宽度一致
+	optionWidth?: number // option 的宽度，如果不传，则和 Select 宽度一致
 	listHeight?: number
 	isClearable?: boolean
 	isVisual?: boolean // 是否开启虚拟滚动
 }>(), {
-	width: '240px',
+	width: 240,
 	listHeight: 256,
 	isClearable: false,
 	isVIsual: false
@@ -98,7 +101,7 @@ const props = withDefaults(defineProps<{
 
 const slots = defineSlots<{
 	option(props: SelectOptions): never
-	selectBox(obj: SelectOptions): never
+	selectBox(props: { selected: SelectOptions }): never
 }>()
 
 const value = defineModel<string|number>('value')
@@ -241,8 +244,6 @@ watch(open, getLocation)
 		&::-webkit-scrollbar {
 			width: 5px;
 			height: 5px;
-			margin-right: 20px;
-			padding-right: 10px;
 		}
 		&::-webkit-scrollbar-track {
 			background-color: rgba(239, 239, 239, 0.5);

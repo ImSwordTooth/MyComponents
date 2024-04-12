@@ -46,7 +46,7 @@ withDefaults(defineProps<{
 })
 
 const inputElement = ref()
-const value = ref<string>()
+const value = defineModel<string>('value')
 const isFocus = ref<boolean>(false)
 
 const clickInputWp = () => {

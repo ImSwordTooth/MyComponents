@@ -2,41 +2,32 @@
 	<h2>Select - 选择器</h2>
 
 	<div class="part">
-		<div class="tip">有 label 有 placeholder</div>
+		<div class="tip">普通 Select</div>
 		<Select
 			v-model:value="myHero"
+			:options="optionList"
 			:label="label"
 			:placeholder="placeholder"
-			:options="optionList"
 			:is-clearable="isClearable"
+			:list-height="listHeight"
+			:width="width"
+			:option-width="isUseOptionWidth ? optionWidth : undefined"
 		>
-
 		</Select>
 	</div>
 
 	<div class="part">
-		<div class="tip">有 label 无 placeholder</div>
-		<Select :label="label" :options="optionList" :width="300" :option-width="200" :is-clearable="isClearable">
-
-		</Select>
-	</div>
-
-	<div class="part">
-		<div class="tip">无 label 有 placeholder</div>
-		<Select :placeholder="placeholder" :width="'100%'" :options="optionList" :is-clearable="isClearable">
-
-		</Select>
-	</div>
-
-	<div class="part">
-		<div class="tip">无 label 无 placeholder</div>
-		<Select :width="200" :options="optionList" :list-height="listHeight" :is-clearable="isClearable">
-
-		</Select>
-	</div>
-
-	<div class="part">
-		<Select :width="240" :options="optionList" :list-height="listHeight" :is-clearable="isClearable">
+		<div class="tip">自定义 options 渲染</div>
+		<Select
+			v-model:value="myHero"
+			:options="optionList"
+			:label="label"
+			:placeholder="placeholder"
+			:is-clearable="isClearable"
+			:list-height="listHeight"
+			:width="width"
+			:option-width="isUseOptionWidth ? optionWidth : undefined"
+		>
 			<template #option="slotProps">
 				<div class="customOption">
 					<img :src="slotProps.img || 'https://x0.ifengimg.com/ucms/2022_18/0F3C1676F1F0FE2BCE928BF565DE65326A6CA8AC_size231_w440_h434.png'" alt="" />
@@ -53,62 +44,59 @@
 				<div class="customOption">
 					<img :src="slotProps.selected.img || 'https://x0.ifengimg.com/ucms/2022_18/0F3C1676F1F0FE2BCE928BF565DE65326A6CA8AC_size231_w440_h434.png'" alt="" />
 
-					<div class="info">
-						{{ slotProps.selected.label }}
-						<div class="desc">
-							{{ slotProps.selected.value }}
-						</div>
-					</div>
+					{{ slotProps.selected.label }}
 				</div>
 			</template>
-
 		</Select>
 	</div>
 
 	<div class="part">
+		<div class="tip">使用了虚拟列表</div>
 		<Select :options="visualOptionList" label="虚拟列表" :is-visual="true">
-
+			<template #option="{ value }">
+				<div style="font-family: monospace">{{ value }}</div>
+			</template>
 		</Select>
 	</div>
 
-
-
 	<div class="prop">
-		<div class="title">
-			label
-			<div class="desc">标题</div>
-		</div>
+		<div class="title">label<div class="desc">标题</div></div>
 		<div class="flex">
-			<input v-model="label" />
+			<Input label="标题" v-model:value="label" is-clearable />
 		</div>
 	</div>
 	<div class="prop">
-		<div class="title">
-			placeholder
-			<div class="desc">placeholder</div>
-		</div>
+		<div class="title">placeholder</div>
 		<div class="flex">
-			<input v-model="placeholder" />
+			<Input label="placeholder" v-model:value="placeholder" is-clearable />
 		</div>
 	</div>
 	<div class="prop">
-		<div class="title">
-			listHeight
-			<div class="desc">下拉菜单的最大高度</div>
-		</div>
-		<div class="flex">
-			<Slider v-model:value="listHeight" :min-value="1" :max-value="600" :step="1" :width="400" />
-		</div>
-	</div>
-	<div class="prop">
-		<div class="title">
-			isClearable
-			<div class="desc">是否可清除</div>
-		</div>
+		<div class="title">isClearable<div class="desc">是否可清除</div></div>
 		<div class="flex">
 			<Checkbox v-model:check="isClearable">{{ isClearable }}</Checkbox>
 		</div>
 	</div>
+	<div class="prop">
+		<div class="title">width<div class="desc">Select 宽度</div></div>
+		<div class="flex">
+			<Slider v-model:value="width" :min-value="1" :max-value="1000" :step="1" :width="400" />
+		</div>
+	</div>
+	<div class="prop">
+		<div class="title">optionWidth<div class="desc">option 宽度，不传则和 width 同宽</div></div>
+		<div class="flex">
+			<Checkbox v-model:check="isUseOptionWidth">是否使用 optionWidth</Checkbox>
+			<Slider v-model:value="optionWidth" :min-value="1" :max-value="1000" :step="1" :width="400" :is-disabled="!isUseOptionWidth" />
+		</div>
+	</div>
+	<div class="prop">
+		<div class="title">listHeight<div class="desc">下拉菜单的最大高度</div></div>
+		<div class="flex">
+			<Slider v-model:value="listHeight" :min-value="1" :max-value="1000" :step="1" :width="400" />
+		</div>
+	</div>
+
 
 </template>
 <script setup lang="ts">
@@ -116,12 +104,16 @@ import Select from "../components/Select.vue";
 import {onMounted, ref} from "vue";
 import Slider from "../components/Slider.vue";
 import Checkbox from "../components/Checkbox.vue";
+import Input from "../components/Input.vue";
 
 const myHero = ref<string>('')
 const label = ref<string>('选择你的英雄')
 const placeholder = ref<string>('choose your hero')
-const listHeight = ref<number>(256)
 const isClearable = ref<boolean>(false)
+const listHeight = ref<number>(256)
+const width = ref<number>(240)
+const isUseOptionWidth = ref<boolean>(true)
+const optionWidth = ref<number>(200)
 
 const optionList = ref([
 	{ value: 'PhantomAssassin', label: '幻影刺客', img: 'https://img2.baidu.com/it/u=3966599238,416582002&fm=253&fmt=auto&app=120&f=JPEG?w=801&h=500' },
@@ -143,7 +135,7 @@ const visualOptionList = ref([])
 
 onMounted(() => {
 	for (let i=0; i<10000; i++) {
-		visualOptionList.value.push({ value: Math.random() })
+		visualOptionList.value.push({ value: `第${i}条：${Math.floor(Math.random() * 10000)}` })
 	}
 })
 
@@ -166,10 +158,12 @@ onMounted(() => {
 	display: flex;
 	border-bottom: 1px solid  #f1f1f1;
 	padding: 20px 0;
+	align-items: center;
 
 	.title {
 		font-weight: bold;
 		margin-right: 40px;
+		width: 200px;
 	}
 	.desc {
 		font-size: 12px;

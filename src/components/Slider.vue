@@ -1,5 +1,5 @@
 <template>
-	<div class="slider" :style="{ width: width ? `${width}px` : '100%' }">
+	<div :class="['slider', { 'isDisabled': isDisabled }]" :style="{ width: width ? `${width}px` : '100%' }">
 		<div class="textPart">
 			<div class="label">
 				<slot name="label">{{ label }}</slot>
@@ -29,6 +29,7 @@ const props = withDefaults(defineProps<{
 	thumbHeight?: number // 轨道高度
 	label?: string | SlotsType
 	valueFormat?: boolean | ((value: number) => string)
+	isDisabled?: boolean
 }>(), {
   valueFormat: true
 })
@@ -131,6 +132,11 @@ const endDrag = () => {
 
 <style scoped lang="scss">
 .slider {
+
+	&.isDisabled {
+		opacity: 0.5;
+		pointer-events: none;
+	}
   .textPart {
     display: flex;
     align-items: center;
