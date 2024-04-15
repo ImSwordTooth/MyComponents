@@ -59,6 +59,25 @@
 		</Select>
 	</div>
 
+	<div class="part">
+		<div class="tip">多选</div>
+		<Select
+			v-model:value="myHeros"
+			:options="optionList"
+			:label="label"
+			:placeholder="placeholder"
+			:is-clearable="isClearable"
+			:list-height="listHeight"
+			:width="400"
+			:option-width="isUseOptionWidth ? optionWidth : undefined"
+			:is-multi="true"
+		>
+			<template #multiRender="slotProps">
+				<div class="multiTag">{{ slotProps.option?.label }}</div>
+			</template>
+		</Select>
+	</div>
+
 	<div class="prop">
 		<div class="title">label<div class="desc">标题</div></div>
 		<div class="flex">
@@ -96,8 +115,6 @@
 			<Slider v-model:value="listHeight" :min-value="1" :max-value="1000" :step="1" :width="400" />
 		</div>
 	</div>
-
-
 </template>
 <script setup lang="ts">
 import Select from "../components/Select.vue";
@@ -107,6 +124,7 @@ import Checkbox from "../components/Checkbox.vue";
 import Input from "../components/Input.vue";
 
 const myHero = ref<string>('')
+const myHeros = ref<string[]>([])
 const label = ref<string>('选择你的英雄')
 const placeholder = ref<string>('choose your hero')
 const isClearable = ref<boolean>(false)
@@ -135,7 +153,7 @@ const visualOptionList = ref([])
 
 onMounted(() => {
 	for (let i=0; i<10000; i++) {
-		visualOptionList.value.push({ value: `第${i}条：${Math.floor(Math.random() * 10000)}` })
+		visualOptionList.value.push({ value: `第${i+1}条：${Math.floor(Math.random() * 10000)}` })
 	}
 })
 
@@ -193,8 +211,14 @@ onMounted(() => {
 			color: #999999;
 		}
 	}
+}
 
-
+.multiTag {
+	display: inline-flex;
+	padding: 2px 8px;
+	background-color: rgba(175, 175, 175, 0.25);
+	border-radius: 12px;
+	margin: 4px 8px 0 0;
 }
 
 </style>

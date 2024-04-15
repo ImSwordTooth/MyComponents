@@ -2,7 +2,7 @@
 	<div class="parent" :style="{ height: `${height}px` }" @scroll="handleScroll">
 		<div class="visualList" ref="listRef" :style="{ height: `${perHeight * list.length}px` }" >
 			<div class="content" :style="{ height: `${height}px`, transform: `translateY(${listScrollTop}px)` }">
-				<slot name="item" v-for="(option, index) of ContentList" :props="option" :key="index"></slot>
+				<slot name="item" v-for="(option, index) of ContentList" :itemInfo="option" :key="index"></slot>
 			</div>
 		</div>
 	</div>
@@ -17,7 +17,7 @@ const props = defineProps<{
 }>()
 
 defineSlots<{
-	item(props: object): never
+	item(itemInfo: object): never
 }>()
 
 const listRef = ref()
